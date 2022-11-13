@@ -1,4 +1,4 @@
-FROM python:3.10.8
+FROM python:3.10.5
 
 WORKDIR /opt/app
 
@@ -13,9 +13,14 @@ RUN apt-get update && apt-get install -y netcat
 COPY requirements.txt requirements.txt
 COPY uwsgi/uwsgi.ini uwsgi.ini
 
+
 RUN  mkdir -p /var/www/static/ \
      && mkdir -p /var/www/media/ \
      && pip install --upgrade pip \
      && pip install --no-cache-dir -r requirements.txt
 
 COPY . .
+
+RUN chmod +x entrypoint.sh
+
+ENTRYPOINT ./entrypoint.sh
