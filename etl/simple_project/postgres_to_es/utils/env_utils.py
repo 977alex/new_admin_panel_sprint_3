@@ -5,9 +5,9 @@ dotenv.load_dotenv()  # для дебага вне докера
 
 
 class Dsn(BaseSettings):
-    dbname: str = Field(..., env="postgres_db")
+    dbname: str = Field("movies_database", env="postgres_db")
     user: str = Field("app", env="postgres_user")
-    password: str = Field(..., env="postgres_password")
+    password: str = Field("123qwe", env="postgres_password")
     host: str = Field("127.0.0.1", env="db_host")
     port: str = Field(5432, env="db_port")
 
@@ -17,7 +17,7 @@ class EsBaseUrl(BaseSettings):
     определяет host и port у ElasticSearch
     """
 
-    es_host: str = Field(..., env="ES_HOST")
+    es_host: str = Field("127.0.0.1", env="ES_HOST")
     es_port: str = Field(9200, env="ES_PORT")
 
     def get_url(self):

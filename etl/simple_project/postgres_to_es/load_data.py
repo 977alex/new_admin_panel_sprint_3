@@ -18,7 +18,7 @@ from utils.logger_util import get_logger
 @backoff((psycopg2.OperationalError,))
 def etl(
     logger: logging.Logger,
-    extracrot: Extractor,
+    extractor: Extractor,
     transformer: Transformer,
     state: State,
     loader: Loader,
@@ -33,7 +33,7 @@ def etl(
     filmwork_ids = state.get_state("filmwork_ids")
 
     # извлекаем данные для переноса их из PostgreSQL в Elasticsearch
-    for extracted_part in extracrot.extract(
+    for extracted_part in extractor.extract(
         last_sync_timestamp, start_timestamp, filmwork_ids
     ):
         # преобразовываем данные в формат, удобоваримый Elasticsearch
