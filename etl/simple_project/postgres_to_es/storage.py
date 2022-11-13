@@ -4,7 +4,6 @@ from typing import Any, Optional
 
 
 class BaseStorage:
-
     @abc.abstractmethod
     def save_state(self, state: dict) -> None:
         """Сохранить состояние в постоянное хранилище"""
@@ -17,16 +16,16 @@ class BaseStorage:
 
 
 class JsonFileStorage(BaseStorage):
-    '''
+    """
     Здесь представлена реализация с сохранением состояния в файл json.
     В целом ничего не мешает поменять это поведение на работу с БД или распределённым хранилищем.
-    '''
+    """
 
     def __init__(self, file_path: Optional[str] = None):
         self.file_path = file_path
         self.default_state = {
             "last_sync_timestamp": "2020-09-16 01:01:01.471642",
-            "filmwork_ids": []
+            "filmwork_ids": [],
         }
 
     def retrieve_state(self) -> dict:
@@ -39,7 +38,7 @@ class JsonFileStorage(BaseStorage):
         except (FileNotFoundError, json.JSONDecodeError):
 
             # если возникло исклчюение
-            with open(self.file_path, 'w', encoding='utf8') as file:
+            with open(self.file_path, "w", encoding="utf8") as file:
 
                 # создаем json с дефолтным значением self.default_state
                 json.dump(self.default_state, file)
@@ -47,16 +46,16 @@ class JsonFileStorage(BaseStorage):
             return self.retrieve_state()
 
     def save_state(self, state: dict) -> None:
-        '''
+        """
         метод сохранения состояния в json файле
-        '''
+        """
 
         # получаем состояние из json
         data = self.retrieve_state()
         # обновляем состояние на новое
         data.update(state)
         # записываем его в json
-        with open(self.file_path, 'w', encoding='utf8') as file:
+        with open(self.file_path, "w", encoding="utf8") as file:
             json.dump(data, file)
 
 
