@@ -1,4 +1,5 @@
 version: '3'
+
 services:
 
   service:
@@ -22,6 +23,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     env_file:
       - ./.env
+
 
   nginx:
     image: nginx:latest
@@ -47,6 +49,20 @@ services:
     depends_on:
       - nginx
 
+  elastic:
+    image: docker.io/elastic/elasticsearch:7.7.0
+    environment:
+      - discovery.type=single-node
+
+
+  etl:
+    build: postgres_to_es
+    env_file:
+      - ./.env
+    depends_on:
+      - nginx
+      - elastic
+      - service
 
 volumes:
   static_volume:
