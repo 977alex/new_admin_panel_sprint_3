@@ -17,15 +17,11 @@ class BaseStorage:
 
 
 class JsonFileStorage(BaseStorage):
-    '''
-    Здесь представлена реализация с сохранением состояния в файл json.
-    В целом ничего не мешает поменять это поведение на работу с БД или распределённым хранилищем.
-    '''
 
     def __init__(self, file_path: Optional[str] = None):
         self.file_path = file_path
         self.default_state = {
-                                "last_sync_timestamp": "2020-09-16 01:01:01.471642",
+                                "last_sync_timestamp": "2022-11-11 11:11:11.471642",
                                 "filmwork_ids": []
                              }
                     
