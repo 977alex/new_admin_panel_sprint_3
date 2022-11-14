@@ -8,8 +8,10 @@ from psycopg2.extras import RealDictCursor
 @contextmanager
 def elastic_search_connection(dsn: str):
     """Создает подключение к ElasticSearch, которое закроет на выходе.
+
     Args:
         dsl: словарь с DSN (Data Source Name) для подключения к ElasticSearch
+
     Yields:
         Подключение к ElasticSearch.
     """
@@ -24,8 +26,10 @@ def elastic_search_connection(dsn: str):
 def postgres_connection(dsn: dict):
     """
     Создает подключение к PostgreSQL, которое закроет на выходе.
+
     Args:
         dsl: словарь с DSN (Data Source Name) для подключения к БД Postgres
+
     Yields:
         Подключение к PostgreSQL.
     """

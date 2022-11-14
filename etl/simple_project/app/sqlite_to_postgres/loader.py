@@ -15,7 +15,7 @@ def conn_context(db_path: str):
         conn = sqlite3.connect(db_path)
     except sqlite3.OperationalError:
         conn = sqlite3.connect('db.sqlite')
-
+    
     conn.row_factory = sqlite3.Row
     yield conn
     conn.close()

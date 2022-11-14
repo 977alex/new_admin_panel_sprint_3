@@ -31,3 +31,4 @@ python load_data.py -e $psql_DB_NAME=movies_db $psql_DB_USER=app $psql_DB_PASSWO
 cd ../
 echo "uwsgi --strict --ini uwsgi.ini"
 uwsgi --strict --ini uwsgi.ini
+

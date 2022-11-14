@@ -4,7 +4,7 @@ _log_format = "%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcN
 
 
 def get_file_handler() -> logging.FileHandler:
-    file_handler = logging.FileHandler("load_data.log")
+    file_handler = logging.FileHandler('load_data.log')
     file_handler.setLevel(logging.WARNING)
     file_handler.setFormatter(logging.Formatter(_log_format))
     return file_handler

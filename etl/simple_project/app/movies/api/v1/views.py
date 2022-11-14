@@ -3,15 +3,16 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.views.generic.list import BaseListView
 from django.views.generic.detail import BaseDetailView
-from movies.models import Filmwork, Genre, GenreFilmwork, Person, PersonFilmwork, Roletype
+from movies.models import Filmwork
+from movies.models.person_film_work import PersonFilmwork, Roles
 
 
 class MoviesApiMixin:
     model = Filmwork
-    http_method_names = ['get']
+    http_method_names = ['get']  # Список методов, которые реализует обработчик
 
     @staticmethod
-    def _aggregate_person(role: Roletype):
+    def _aggregate_person(role: Roles):
         return ArrayAgg('persons__full_name',
                         filter=Q(personfilmwork__role__icontains=role),
                         distinct=True)
@@ -19,9 +20,9 @@ class MoviesApiMixin:
     def get_queryset(self):
         queryset = Filmwork.objects.prefetch_related('genres', 'person').values().all(). \
             annotate(genres=ArrayAgg('genres__name', distinct=True),
-                     actors=MoviesApiMixin._aggregate_person(role=Roletype.ACTOR),
-                     directors=MoviesApiMixin._aggregate_person(role=Roletype.DIRECTOR),
-                     writers=MoviesApiMixin._aggregate_person(role=Roletype.WRITER),
+                     actors=MoviesApiMixin._aggregate_person(role=Roles.ACTOR),
+                     directors=MoviesApiMixin._aggregate_person(role=Roles.DIRECTOR),
+                     writers=MoviesApiMixin._aggregate_person(role=Roles.WRITER),
                      )
 
         return queryset
