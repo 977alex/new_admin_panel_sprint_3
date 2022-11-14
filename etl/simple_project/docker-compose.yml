@@ -17,7 +17,7 @@ services:
 
   psql:
     # Образ и версия базы, которую мы будем использовать
-    image: postgres:13.3
+    image: postgres:alpine
     volumes:
       - ./psql/create_schema.sql:/docker-entrypoint-initdb.d/create_schema.sql
       - postgres_data:/var/lib/postgresql/data

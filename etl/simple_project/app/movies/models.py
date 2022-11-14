@@ -48,6 +48,8 @@ class Filmwork(UUIDMixin, TimeStampedMixin):
     genres = models.ManyToManyField('Genre', through='GenreFilmwork')
     persons = models.ManyToManyField('Person', through='PersonFilmwork')
     title = models.TextField(_('title'))
+    certificate = models.CharField(_('certificate'), max_length=512, blank=True, null=True)
+    file_path = models.FileField(_('file'), blank=True, null=True, upload_to='movies/')
     description = models.TextField(_('description'), null=True)
     creation_date = models.DateField(_('creation_date'), auto_now_add=True, null=True)
     rating = models.FloatField(
