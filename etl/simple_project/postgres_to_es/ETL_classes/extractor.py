@@ -5,7 +5,7 @@ from utils.connection_util import postgres_connection
 
 
 class Extractor:
-    '''класс для извлечения данных из PostgreSQL'''
+    """класс для извлечения данных из PostgreSQL"""
 
     def __init__(self, psql_dsn, chunk_size: int, storage_state, logger) -> None:
         self.chunk_size = chunk_size
@@ -13,15 +13,17 @@ class Extractor:
         self.dsn = psql_dsn
         self.logger = logger
 
-    def extract(self,
-                extract_timestamp: datetime.datetime,
-                start_timestamp: datetime.datetime,
-                exclude_ids: list) -> Iterator:
+    def extract(
+        self,
+        extract_timestamp: datetime.datetime,
+        start_timestamp: datetime.datetime,
+        exclude_ids: list,
+    ) -> Iterator:
         """
         Метод чтения данных пачками.
         Ищем строки, удовлетворяющие условию - при нахождении записываем в хранилище состояния idшники
         """
-        
+
         with postgres_connection(self.dsn) as pg_conn, pg_conn.cursor() as cursor:
             sql = f"""
                     SELECT 
@@ -64,12 +66,12 @@ class Extractor:
                 rows = cursor.fetchmany(self.chunk_size)
                 # если таких строк нет - выходим
                 if not rows:
-                    self.logger.info('изменений не найдено')
+                    self.logger.info("изменений не найдено")
                     break
                 # если строки есть - фиксируем в хранилище состояния
-                self.logger.info(f'извлечено {len(rows)} строк')
+                self.logger.info(f"извлечено {len(rows)} строк")
                 for data in rows:
                     ids_list = self.state.get_state("filmwork_ids")
-                    ids_list.append(data['id'])
+                    ids_list.append(data["id"])
                     self.state.set_state("filmwork_ids", ids_list)
                 yield rows
