@@ -25,8 +25,8 @@ python manage.py collectstatic --noinput || true & wait
 
 cd sqlite_to_postgres
 
-echo "python main.py"
-python main.py
+echo "python load.py"
+python load.py
 
 cd ../
 echo "uwsgi --strict --ini uwsgi.ini"
