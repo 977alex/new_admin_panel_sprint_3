@@ -21,7 +21,7 @@ class JsonFileStorage(BaseStorage):
     def __init__(self, file_path: Optional[str] = None):
         self.file_path = file_path
         self.default_state = {
-                                "last_sync_timestamp": "2022-11-11 11:11:11.471642",
+                                "last_sync_timestamp": "2018-11-11 11:11:11.471642",
                                 "filmwork_ids": []
                              }
                     
