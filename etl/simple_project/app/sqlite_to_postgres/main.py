@@ -1,67 +1,73 @@
-"""перенос данных заданных таблиц sqlite в соответсвующие таблицы postgres """
-
-import contextlib
-import logging
 import os
-import sqlite3
-from contextlib import contextmanager
+from logging import Logger
 
+import dotenv
 import psycopg2
-from dotenv import load_dotenv
-from psycopg2.extensions import connection as _connection
 from psycopg2.extras import DictCursor
 
-from postgres_saver import PostgresSaver
-from sqlite_extractor import SQLiteExtractor
-from tables_set import get_tables_set
+from loader import SQLiteLoader, conn_context, sqlite3
+from models import FilmWork, Genre, GenreFilmWork, Person, PersonFilmWork
+from saver import PostgresSaver, _connection
+from utils import get_logger
+
+PAGE_SIZE = 500
+
+models = {'film_work': FilmWork,
+          'genre': Genre,
+          'genre_film_work': GenreFilmWork,
+          'person': Person,
+          'person_film_work': PersonFilmWork
+          }
 
 
-@contextmanager
-def conn_context(db_path: str):
-    conn = sqlite3.connect(db_path)
-    conn.row_factory = sqlite3.Row
-    yield conn
-    conn.close()
+def return_dsl() -> dict:
+    '''
+    Возвращает словарь DSN (Data Source Name) для подключения к БД
+    '''
+    dotenv.load_dotenv()
+    dsn = {'psql': {'dbname': os.environ.get('psql_DB_NAME'),
+                    'user': os.environ.get('psql_DB_USER'),
+                    'password': os.environ.get('psql_DB_PASSWORD'),
+                    'host': os.environ.get('psql_DB_HOST'),
+                    'port': os.environ.get('psql_DB_PORT')},
+
+           'sqlite': {'db_path': os.environ.get('sqlite_DB_NAME')}
+           }
+    return dsn
 
 
-def load_from_sqlite(sqlite_conn: sqlite3.Connection, pg_conn: _connection):
-    """основная функция"""
-    tables_set = get_tables_set()
-    page_size = int(os.environ.get('PAGE_SIZE'))
+def load_from_sqlite(logger: Logger, sqlite_conn: sqlite3.Connection, pg_conn: _connection):
+    """
+    Основной метод загрузки данных из SQLite в Postgres
+    Args:
+        logger: логгер
+        sqlite_conn: подключение к базе данных SQLite.
+        pg_conn: подключение к базе данных PostgreSQL.
+    """
 
-    postgres_saver = PostgresSaver(
-        pg_conn,
-        tables_set,
-        os.environ.get('POSTGRES_SCHEMA_NAME'),
-    )
-    sqlite_extract = SQLiteExtractor(sqlite_conn, tables_set)
-    postgres_saver.delete_all_data()
+    sqlite_loader = SQLiteLoader(sqlite_conn)
+    postgres_saver = PostgresSaver(pg_conn)
 
-    for table_name in list(tables_set.keys()):
-        """цикл для выбора данных заданных таблиц из sqlite и сохранением в postgres"""
-        table_set = tables_set[table_name]
-        curs = sqlite_extract.get_cursor_for_select(table_name)
-
-        while table_data := sqlite_extract.extract_data_from_cursor(
-                curs,
-                table_set['dataclass'],
-                page_size,
-        ):
-            postgres_saver.save_all_data(table_name, table_data)
+    sqlite_loader.load_movies(logger, models, postgres_saver, PAGE_SIZE)
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
-    load_dotenv()
-    dsn = {
-        'dbname': os.environ.get('POSTGRES_DBNAME'),
-        'user': os.environ.get('USE'),
-        'password': os.environ.get('PASSWORD'),
-        'host': os.environ.get('HOST'),
-        'port': os.environ.get('PORT'),
-        }
-    sqlite_dbname = os.environ.get('SQLITE_DBNAME')
-    with conn_context(sqlite_dbname) as sqlite_conn, \
-            contextlib.closing(psycopg2.connect(**dsn, cursor_factory=DictCursor)) as pg_conn:
-        load_from_sqlite(sqlite_conn, pg_conn)
-    logging.info('COMPLETE')
+    logger = get_logger(__name__)
+
+    try:
+        dsn = return_dsl()
+        with (conn_context(**dsn['sqlite']) as sqlite_conn,
+              psycopg2.connect(**dsn['psql'], cursor_factory=DictCursor) as pg_conn):
+            logger.info('подключились к базе')
+            load_from_sqlite(logger, sqlite_conn, pg_conn)
+    except KeyboardInterrupt as e:
+        logger.warning(str(type(e)) + ' программа прервана пользователем')
+        pg_conn.close()
+    except Exception as e: # фиксируем в лог все исключения, которые могу возникнуть
+        logger.warning(str(type(e)) + ' ' + str(e))
+    except SystemExit as e:
+        logger.warning(str(type(e)) + ' ' + str(e))
+        pg_conn.close()
+    except GeneratorExit as e:
+        logger.warning(str(type(e)) + ' ' + str(e))
+        pg_conn.close()

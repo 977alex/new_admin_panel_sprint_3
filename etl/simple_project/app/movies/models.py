@@ -23,7 +23,7 @@ class UUIDMixin(models.Model):
 
 class Genre(UUIDMixin, TimeStampedMixin):
     name = models.CharField(_('name'), max_length=255)
-    description = models.TextField(_('description'), blank=True)
+    description = models.TextField(_('description'), null=True)
 
     class Meta:
         db_table = 'content"."genre'
@@ -48,10 +48,10 @@ class Filmwork(UUIDMixin, TimeStampedMixin):
     genres = models.ManyToManyField('Genre', through='GenreFilmwork')
     persons = models.ManyToManyField('Person', through='PersonFilmwork')
     title = models.TextField(_('title'))
-    description = models.TextField(_('description'), blank=True)
-    creation_date = models.DateField(_('creation_date'), auto_now_add=True)
+    description = models.TextField(_('description'), null=True)
+    creation_date = models.DateField(_('creation_date'), auto_now_add=True, null=True)
     rating = models.FloatField(
-        _('rating'), blank=True, validators=[MinValueValidator(0), MaxValueValidator(100)]
+        _('rating'), null=True, validators=[MinValueValidator(0), MaxValueValidator(100)]
     )
 
     class Meta:

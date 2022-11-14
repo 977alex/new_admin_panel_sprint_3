@@ -1,43 +1,49 @@
-"""Описание класса dataclass  для моделей"""
-
-import datetime
-import uuid
 from dataclasses import dataclass
+from typing import Optional
+
+
+@dataclass
+class FilmWork:
+    id: str
+    title: str
+    type: str
+    created: str
+    modified: str
+    creation_date: Optional[str] = None
+    file_path: Optional[str] = None
+    description: Optional[str] = None
+    rating: Optional[float] = None
 
 
 @dataclass
 class Genre:
-    id: uuid.UUID
+    id: str
     name: str
-    description: str
+    created: str
+    modified: str
+    description: Optional[str] = None
 
 
 @dataclass
 class Person:
-    id: uuid.UUID
+    id: str
     full_name: str
+    created: str
+    modified: str
 
 
 @dataclass
-class Filmwork:
-    id: uuid.UUID
-    title: str
-    description: str
-    creation_date: datetime.date
-    rating: float
-    type: str
+class GenreFilmWork:
+    id: str
+    genre_id: str
+    film_work_id: str
+    created: str
 
 
 @dataclass
-class GenreFilmwork:
-    id: uuid.UUID
-    genre_id: uuid.UUID
-    film_work_id: uuid.UUID
-
-
-@dataclass
-class PersonFilmwork:
-    id: uuid.UUID
-    person_id: uuid.UUID
-    film_work_id: uuid.UUID
+class PersonFilmWork:
+    id: str
+    film_work_id: str
+    person_id: str
     role: str
+    created: str
