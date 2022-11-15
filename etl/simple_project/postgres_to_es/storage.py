@@ -18,11 +18,15 @@ class BaseStorage:
 
 class JsonFileStorage(BaseStorage):
     def __init__(self, file_path: Optional[str] = None):
+        self.default_state = {}
         self.file_path = file_path
-        self.default_state = {
-            "last_sync_timestamp": datetime.MINYEAR,
-            "filmwork_ids": [],
-        }
+        self.default_state['last_sync_timestamp'] = str(datetime.datetime(2000, 1, 1, tzinfo=None))
+        self.default_state['filmwork_ids'] = []
+
+        # self.default_state = {
+        #     "last_sync_timestamp": "2018-11-11 11:11:11.471642",
+        #     "filmwork_ids": [],
+        # }
 
     def retrieve_state(self) -> dict:
         try:
@@ -37,6 +41,7 @@ class JsonFileStorage(BaseStorage):
             with open(self.file_path, "w", encoding="utf8") as file:
 
                 # создаем json с дефолтным значением self.default_state
+
                 json.dump(self.default_state, file)
 
             return self.retrieve_state()

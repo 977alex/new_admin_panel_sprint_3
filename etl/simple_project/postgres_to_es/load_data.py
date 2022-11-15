@@ -52,5 +52,5 @@ if __name__ == "__main__":
     loader = Loader(dsn=configs.es_base_url, logger=logger)
     while True:
         etl(logger, extractor, transformer, state, loader)
-        logger.info(f"сон на {configs.sleep_time}")
+        logger.info(f"waiting {configs.sleep_time}")
         time.sleep(configs.sleep_time)
