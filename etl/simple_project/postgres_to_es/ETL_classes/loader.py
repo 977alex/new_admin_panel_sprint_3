@@ -14,7 +14,7 @@ class Loader:
         # при первичной инициализации класса Loader создадим (если нет) индекс movies в ElasticSearch
         self.create_index("movies")
 
-    @backoff((ConnectionError,))
+    @backoff()
     def create_index(self, index_name: str) -> None:
         """Создание ES индекса.
         :param index_name: Наименование индекса.

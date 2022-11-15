@@ -2,6 +2,7 @@ import datetime
 from typing import Iterator
 
 from utils.connection_util import postgres_connection
+from utils.backoff_util import backoff
 
 
 class Extractor:
@@ -23,6 +24,7 @@ class Extractor:
         self.dsn = psql_dsn
         self.logger = logger
 
+    @backoff()
     def extract(
         self,
         extract_timestamp: datetime.datetime,

@@ -14,8 +14,6 @@ from utils.env_utils import BaseConfig
 from utils.logger_util import get_logger
 
 
-@backoff((elasticsearch.exceptions.ConnectionError,))
-@backoff((psycopg2.OperationalError,))
 def etl(
     logger: logging.Logger,
     extracrot: Extractor,

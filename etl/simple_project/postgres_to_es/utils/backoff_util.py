@@ -1,25 +1,33 @@
+import logging
 import time
+from datetime import datetime
 from functools import wraps
 
-from utils.logger_util import get_logger
-
-logger = get_logger(__name__)
+log = logging.getLogger('ConnectLog')
 
 
-def backoff(exceptions, start_sleep_time=0.1, factor=2, border_sleep_time=10):
+def backoff(start_sleep_time=0.1, factor=2, border_sleep_time=3):
     def func_wrapper(func):
         @wraps(func)
         def inner(*args, **kwargs):
-            sleep_time = start_sleep_time
+            t = start_sleep_time
+            count = 0
             while True:
                 try:
                     return func(*args, **kwargs)
-                except exceptions as e:
-                    logger.exception(str(e))
-                    sleep_time = sleep_time * factor
-                    if sleep_time > border_sleep_time:
-                        sleep_time = border_sleep_time
-                    time.sleep(sleep_time)
+                except Exception as err:
+                    time.sleep(t)
+                    if t >= border_sleep_time:
+                        t = border_sleep_time
+                    if t < border_sleep_time:
+                        t *= factor
+                    log.error(f'{datetime.now()}\n\n{err}\n\nconnection attempt {count}')
+                    count += 1
+                    continue
+                finally:
+                    if count == 10:
+                        log.info(f'{datetime.now()}\n\nConnection is interrupted attempts are finished')
+                        break
 
         return inner
 
