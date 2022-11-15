@@ -15,8 +15,7 @@ def backoff(exceptions, start_sleep_time=0.1, factor=2, border_sleep_time=10):
                 try:
                     return func(*args, **kwargs)
                 except exceptions as e:
-                    logger.info(str(e))
-                    logger.warning(str(e))
+                    logger.exception(str(e))
                     sleep_time = sleep_time * factor
                     if sleep_time > border_sleep_time:
                         sleep_time = border_sleep_time

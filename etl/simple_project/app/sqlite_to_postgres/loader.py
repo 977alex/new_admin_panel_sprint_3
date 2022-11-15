@@ -66,7 +66,7 @@ class SQLiteLoader:
 
         data_dict = {}
         for table in list_of_table:
-            logger.info(f"загрузка даннных из таблицы {table}")
+            logger.info(f"loading of data from the table{table}")
 
             field_names = self.return_field_names(table)
             self.cursor.execute(f"SELECT {field_names} FROM {table}")
@@ -81,15 +81,15 @@ class SQLiteLoader:
                         data_list.append(
                             from_dict(data_class=models[table], data=fetch)
                         )
-                    logger.info(f"скачали из SQLite  [{table}] {len(data_fetch)} строк")
+                    logger.info(f"downloaded lines from SQLite  [{table}] {len(data_fetch)}")
 
                     data_dict.update({table: data_list})
                     postgres_saver.save_all_data(data_dict, page_size)
                     logger.info(
-                        f"загрузили в PostgreSQL  [{table}] {len(data_fetch)} строк"
+                        f"downloaded lines from PostgreSQL  [{table}] {len(data_fetch)} "
                     )
 
         logger.info(
-            "Подгрузили  из SQLite в PostgreSQL за "
+            "loaded from SQLite in PostgreSQL for "
             + str(datetime.datetime.now() - start)
         )

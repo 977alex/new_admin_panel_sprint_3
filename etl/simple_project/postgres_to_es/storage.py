@@ -1,4 +1,5 @@
 import abc
+import datetime
 import json
 from typing import Any, Optional
 
@@ -19,7 +20,7 @@ class JsonFileStorage(BaseStorage):
     def __init__(self, file_path: Optional[str] = None):
         self.file_path = file_path
         self.default_state = {
-            "last_sync_timestamp": "2018-11-11 11:11:11.471642",
+            "last_sync_timestamp": datetime.MINYEAR,
             "filmwork_ids": [],
         }
 
@@ -32,7 +33,7 @@ class JsonFileStorage(BaseStorage):
 
         except (FileNotFoundError, json.JSONDecodeError):
 
-            # если возникло исклчюение
+            # если возникло исключение
             with open(self.file_path, "w", encoding="utf8") as file:
 
                 # создаем json с дефолтным значением self.default_state

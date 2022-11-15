@@ -25,7 +25,7 @@ def etl(
 ) -> None:
 
     last_sync_timestamp = state.get_state("last_sync_timestamp")
-    logger.info(f" синхронизация была {last_sync_timestamp}")
+    logger.info(f" synchronization was {last_sync_timestamp}")
     start_timestamp = datetime.datetime.now()
     filmwork_ids = state.get_state("filmwork_ids")
 

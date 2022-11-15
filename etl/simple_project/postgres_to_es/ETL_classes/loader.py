@@ -94,7 +94,7 @@ class Loader:
                     index=index_name, settings=settings, mappings=mappings
                 )
                 self.logger.info(
-                    f"Создание индекса {index_name} со следующими схемами:"
+                    f"Index creation {index_name} :"
                     f"{json.dumps(settings, indent=2)} и {json.dumps(mappings, indent=2)} "
                 )
 
@@ -114,4 +114,4 @@ class Loader:
         with elastic_search_connection(self.dsn) as es:
             # используя встроенные методы библиотеки elasticsearch грузим данные в ElasticSearch
             helpers.bulk(es, actions)
-            self.logger.info(f"загружено {len(data)} строк")
+            self.logger.info(f"loaded lines {len(data)} ")

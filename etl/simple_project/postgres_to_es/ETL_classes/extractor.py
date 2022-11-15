@@ -5,7 +5,17 @@ from utils.connection_util import postgres_connection
 
 
 class Extractor:
-    """класс для извлечения данных из PostgreSQL"""
+    """класс для извлечения данных из PostgreSQL
+
+     Args:
+        chunk_size: количество записей.
+        storage_state: статус .
+        psql_dsn: настройки подключения psql.
+        logger: настройки логгера.
+
+    Returns:
+        Результат выполнения функции.
+    """
 
     def __init__(self, psql_dsn, chunk_size: int, storage_state, logger) -> None:
         self.chunk_size = chunk_size
@@ -22,6 +32,14 @@ class Extractor:
         """
         Метод чтения данных пачками.
         Ищем строки, удовлетворяющие условию - при нахождении записываем в хранилище состояния idшники
+        Args:
+            extract_timestamp: метка времени извлечения.
+            start_timestamp: метка времени старта .
+            exclude_ids: исключенные ID .
+
+        Returns:
+            Результат выполнения функции.
+
         """
 
         with postgres_connection(self.dsn) as pg_conn, pg_conn.cursor() as cursor:
@@ -66,10 +84,10 @@ class Extractor:
                 rows = cursor.fetchmany(self.chunk_size)
                 # если таких строк нет - выходим
                 if not rows:
-                    self.logger.info("изменений не найдено")
+                    self.logger.info("changes it isn't found")
                     break
                 # если строки есть - фиксируем в хранилище состояния
-                self.logger.info(f"извлечено {len(rows)} строк")
+                self.logger.info(f"taken lines {len(rows)} ")
                 for data in rows:
                     ids_list = self.state.get_state("filmwork_ids")
                     ids_list.append(data["id"])

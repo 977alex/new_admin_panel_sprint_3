@@ -56,10 +56,10 @@ if __name__ == "__main__":
             conn_context(**dsn["sqlite"]) as sqlite_conn,
             psycopg2.connect(**dsn["psql"], cursor_factory=DictCursor) as pg_conn,
         ):
-            logger.info("подключились к базе")
+            logger.info("connected to base")
             load_from_sqlite(logger, sqlite_conn, pg_conn)
     except KeyboardInterrupt as e:
-        logger.warning(str(type(e)) + "  прервано пользователем")
+        logger.warning(str(type(e)) + "  interrupted by the user")
         pg_conn.close()
     except Exception as e:  # фиксируем в лог все исключения, которые могу возникнуть
         logger.warning(str(type(e)) + " " + str(e))
